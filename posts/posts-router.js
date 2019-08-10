@@ -239,6 +239,8 @@ router.get('/:id/comments', async (req, res) => {
   }
 })
 
+// THIS ENDPOINT IS NOT LISTED IN THE README FOR MVP
+// BUT HAS A DB METHOD ASSOCIATED WITH IT
 // GET - '/api/posts/:id/comments/:id' - Returns an
 // array with a single comment object associated with
 // the post with the specified id
