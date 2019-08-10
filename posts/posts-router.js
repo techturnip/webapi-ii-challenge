@@ -159,17 +159,53 @@ router.delete('/:id', async (req, res) => {
 // POST - '/api/posts/:id/comments' - Creates a
 // comment for the post with the specified id using
 // information sent inside of the request body.
-// router.post('/:id/comments', async (req, res) => {
-//   try {
+// Requires 'post_id' in req.body
+router.post('/:id/comments', async (req, res) => {
+  console.log('REQ BODY', req.body)
 
-//   } catch (err) {
+  try {
+    // Find the post by id from params
+    const post = await Posts.findById(req.params.id)
 
-//   }
-// })
+    // If post doesn't exist, findById() returns an empty
+    // array, check for length
+    if (post.length) {
+      // pull the text property from req.body
+      const { text } = req.body
+
+      // Check if the comment text exist, is a
+      // string and has a length > 0
+      if (text && text.length > 0 && typeof text === 'string') {
+        // If post exists, and comment text is valid
+        // insert comment into db
+        const newComment = await Posts.insertComment(req.body)
+        console.log('NEW COMMENT', newComment)
+
+        // Return status code of 201
+        res.status(201).json(newComment)
+      } else {
+        res.status(400).json({
+          errMessage: 'Please provide text for the comment.'
+        })
+      }
+    } else {
+      // Else post does not exist, return 404
+      res.status(404).json({
+        message: 'The post with the specified ID does not exist'
+      })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({
+      err,
+      errMessage: 'There was an error while saving the comment to the database'
+    })
+  }
+})
 
 // GET - '/api/posts/:id/comments' - Returns an
 // array of all the comment objects associated with
-// the post with the specified id.
+// post of the specified id.
 router.get('/:id/comments', async (req, res) => {
   try {
     // Find the post by id from params
@@ -183,6 +219,7 @@ router.get('/:id/comments', async (req, res) => {
 
       // if post has no comments findPostComments()
       // returns an empty array, check for length
+      // Ternary for brevity
       postComments.length
         ? res.status(200).json(postComments) // found comments
         : res.status(404).json({

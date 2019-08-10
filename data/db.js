@@ -54,6 +54,7 @@ function findCommentById(id) {
 }
 
 function insertComment(comment) {
+  console.log('db comment', comment)
   return db('comments')
     .insert(comment)
     .then(ids => ({ id: ids[0] }))
