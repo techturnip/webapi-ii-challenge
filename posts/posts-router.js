@@ -30,7 +30,9 @@ router.get('/', async (req, res) => {
 // GET - '/api/posts/:id' - Returns the post object
 // with the specified id.
 router.get('/:id', async (req, res) => {
+  // get id from the url params
   const { id } = req.params
+
   try {
     // .findById() will return an array with the requested
     // post obj
@@ -46,6 +48,46 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({
       err,
       errMessage: 'The post information could not be retrieved.'
+    })
+  }
+})
+
+// POST - '/api/posts' - Creates a post using the
+// information sent inside the request body.
+router.post('/', async (req, res) => {
+  try {
+    // Pull title and contents out of req.body
+    const { title, contents } = req.body
+
+    console.log('req.body', req.body)
+
+    // Check if the post title and contents
+    // exist, are strings and have a length > 0
+    if (
+      title &&
+      title.length > 0 &&
+      typeof title === 'string' &&
+      contents &&
+      contents.length > 0 &&
+      typeof contents === 'string'
+    ) {
+      // if new post obj is valid, insert into
+      // the database...
+      const newPostId = await Posts.insert(req.body)
+
+      // ...and send back status 201
+      res.status(201).json(newPostId)
+    } else {
+      // if the post obj is invalid, send back
+      // a status of 400
+      res.status(400).json({
+        errMessage: 'Please provide title and contents for the post.'
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+      err,
+      errMessage: 'There was an error while saving the post to the database'
     })
   }
 })
