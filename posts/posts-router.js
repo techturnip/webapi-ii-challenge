@@ -114,11 +114,17 @@ router.put('/:id', async (req, res) => {
       // specified update to reflect the changes in the db
       const updatedPost = await Posts.update(id, req.body)
 
-      updatedPost
-        ? res.status(200).json(updatedPost)
-        : res.status(404).json({
-            message: 'The post with the specified ID does not exist'
-          })
+      if (updatedPost) {
+        // grab the updated post
+        const returnUpdatedPost = await Posts.findById(id)
+
+        // send updated post with response
+        res.status(200).json(returnUpdatedPost)
+      } else {
+        res.status(404).json({
+          message: 'The post with the specified ID does not exist'
+        })
+      }
     } else {
       // if the post obj is invalid, send back
       // a status of 400
