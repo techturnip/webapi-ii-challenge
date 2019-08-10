@@ -1,11 +1,17 @@
 const express = require('express')
 
+const PostsRouter = require('../posts/posts-router.js')
+
 const server = express()
 
-const postsRouter = require('../posts/posts-router.js')
-
 server.use(express.json())
+server.use('/api/posts', PostsRouter)
 
-server.use('/api/posts', postsRouter)
+server.get('/', (req, res) => {
+  res.send(`
+  <h2>Lambda Posts API</h>
+  <p>Welcome to the Lambda Posts API</p>
+  `)
+})
 
 module.exports = server
