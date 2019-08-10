@@ -138,13 +138,18 @@ router.put('/:id', async (req, res) => {
 // specified id and returns the deleted post object.
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedPost = await Posts.remove(req.params.id)
+    // grab post associated with the id
+    const postToBeDeleted = await Posts.findById(req.params.id)
 
-    deletedPost
-      ? res.status(200).json(deletedPost)
-      : res.status(404).json({
-          message: 'The post with the specified ID does not exist'
-        })
+    if (postToBeDeleted.length) {
+      const deletedPostId = await Posts.remove(req.params.id)
+      res.status(200).json(postToBeDeleted)
+    } else {
+      // if the post to
+      res.status(404).json({
+        message: 'The post with the specified ID does not exist'
+      })
+    }
   } catch (err) {
     res.status(500).json({
       err,
@@ -161,8 +166,6 @@ router.delete('/:id', async (req, res) => {
 // information sent inside of the request body.
 // Requires 'post_id' in req.body
 router.post('/:id/comments', async (req, res) => {
-  console.log('REQ BODY', req.body)
-
   try {
     // Find the post by id from params
     const post = await Posts.findById(req.params.id)
@@ -179,7 +182,6 @@ router.post('/:id/comments', async (req, res) => {
         // If post exists, and comment text is valid
         // insert comment into db
         const newComment = await Posts.insertComment(req.body)
-        console.log('NEW COMMENT', newComment)
 
         // Return status code of 201
         res.status(201).json(newComment)
