@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
   } catch (err) {
     res.status(500).json({
       err,
-      errMessage: 'The posts information could not be retrieved.'
+      errMessage: 'The posts information could not be retrieved'
     })
   }
 })
@@ -42,12 +42,12 @@ router.get('/:id', async (req, res) => {
     post.length
       ? res.status(200).json(post)
       : res.status(404).json({
-          message: 'The post with the specified ID does not exist.'
+          message: 'The post with the specified ID does not exist'
         })
   } catch (err) {
     res.status(500).json({
       err,
-      errMessage: 'The post information could not be retrieved.'
+      errMessage: 'The post information could not be retrieved'
     })
   }
 })
@@ -79,7 +79,7 @@ router.post('/', async (req, res) => {
       // if the post obj is invalid, send back
       // a status of 400
       res.status(400).json({
-        errMessage: 'Please provide title and contents for the post.'
+        errMessage: 'Please provide title and contents for the post'
       })
     }
   } catch (err) {
@@ -117,19 +117,40 @@ router.put('/:id', async (req, res) => {
       updatedPost
         ? res.status(200).json(updatedPost)
         : res.status(404).json({
-            message: 'The post with the specified ID does not exist.'
+            message: 'The post with the specified ID does not exist'
           })
     } else {
       // if the post obj is invalid, send back
       // a status of 400
       res.status(400).json({
-        errMessage: 'Please provide title and contents for the post.'
+        errMessage: 'Please provide title and contents for the post'
       })
     }
   } catch (err) {
     res.status(500).json({
       err,
-      errMessage: 'The post information could not be modified.'
+      errMessage: 'The post information could not be modified'
+    })
+  }
+})
+
+// DELETE - '/api/posts/:id' - Removes the post with the
+// specified id and returns the deleted post object. You
+// may need to make additional calls to the database in
+// order to satisfy this requirement.
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedPost = await Posts.remove(req.params.id)
+
+    deletedPost
+      ? res.status(200).json(deletedPost)
+      : res.status(404).json({
+          message: 'The post with the specified ID does not exist.'
+        })
+  } catch (err) {
+    res.status(500).json({
+      err,
+      errMessage: 'The post could not be removed'
     })
   }
 })
