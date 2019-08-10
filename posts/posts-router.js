@@ -135,9 +135,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE - '/api/posts/:id' - Removes the post with the
-// specified id and returns the deleted post object. You
-// may need to make additional calls to the database in
-// order to satisfy this requirement.
+// specified id and returns the deleted post object.
 router.delete('/:id', async (req, res) => {
   try {
     const deletedPost = await Posts.remove(req.params.id)
@@ -145,7 +143,7 @@ router.delete('/:id', async (req, res) => {
     deletedPost
       ? res.status(200).json(deletedPost)
       : res.status(404).json({
-          message: 'The post with the specified ID does not exist.'
+          message: 'The post with the specified ID does not exist'
         })
   } catch (err) {
     res.status(500).json({
@@ -154,5 +152,58 @@ router.delete('/:id', async (req, res) => {
     })
   }
 })
+
+// COMMENTS ENDPOINTS -----------------------------|
+// ------------------------------------------------|
+
+// POST - '/api/posts/:id/comments' - Creates a
+// comment for the post with the specified id using
+// information sent inside of the request body.
+// router.post('/:id/comments', async (req, res) => {
+//   try {
+
+//   } catch (err) {
+
+//   }
+// })
+
+// GET - '/api/posts/:id/comments' - Returns an
+// array of all the comment objects associated with
+// the post with the specified id.
+router.get('/:id/comments', async (req, res) => {
+  try {
+    // Find the post by id from params
+    const post = await Posts.findById(req.params.id)
+
+    // If post doesn't exist, findById() returns an empty
+    // array, check for length
+    if (post.length) {
+      // If post exists, find all comments for it
+      const postComments = await Posts.findPostComments(req.params.id)
+
+      // if post has no comments findPostComments()
+      // returns an empty array, check for length
+      postComments.length
+        ? res.status(200).json(postComments) // found comments
+        : res.status(404).json({
+            message: 'Comments for the post with the specified ID do not exist'
+          }) // empty, 404 no comments found
+    } else {
+      // Else post does not exist, return 404
+      res.status(404).json({
+        message: 'The post with the specified ID does not exist'
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+      err,
+      errMessage: 'The comments information could not be retrieved'
+    })
+  }
+})
+
+// GET - '/api/posts/:id/comments/:id' - Returns an
+// array with a single comment object associated with
+// the post with the specified id
 
 module.exports = router
